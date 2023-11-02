@@ -20,3 +20,4 @@ export async function getMishna(name:string){
     // return data;
     
 }
+
