@@ -1,4 +1,4 @@
-<!-- <script lang="ts">
+<script lang="ts">
     import type { PageData } from './$types';
     import { nextMishna } from '$lib/sefaria';
     export let data: PageData;
@@ -11,11 +11,12 @@
     </div>
     
     <div class="mefarshim-container">
-        <h3 class="title">Mefarshim</h3>
+        <nav class="navbar">
+	        <a href="/session/bar">Bartanura</a>
+	        <a href="/session/ram">Rambam</a>
+        </nav>
         <div class="text-body">
-            {#each data.mefarshim as perush}
-            <p>{@html perush}</p>
-            {/each}
+            <slot />
         </div>
     </div>
 
@@ -23,6 +24,7 @@
         <button class="next-button">Next Mishna</button>
         <button class="prev-button">Prev Mishna</button>
     </div>
+
 </div>
 
 <style>
@@ -99,4 +101,29 @@
     padding-left: 10%;
     padding-right: 10%;
 }
-</style> -->
+
+/* Styles for the navigation bar */
+.navbar {
+    background-color: #333;
+    display: flex; /* Use flexbox to center items horizontally and vertically */
+    justify-content: center; /* Center items horizontally */
+    align-items: center; /* Center items vertically */
+    overflow: hidden;
+}
+
+/* Style for the navigation links */
+.navbar a {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+/* Hover effect for navigation links */
+.navbar a:hover {
+    background-color: #111;
+}
+
+</style>
