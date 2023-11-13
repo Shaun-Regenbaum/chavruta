@@ -1,7 +1,18 @@
-<!-- <script lang="ts">
-    import type { PageData } from './$types';
-    import { nextMishna } from '$lib/sefaria';
+<script lang="ts">
+    import type { PageData } from '../$types';
+    import { getMefarshim, nextMishna } from '$lib/sefaria';
+	import Loading from '$lib/components/Loading.svelte';
+	import { onMount } from 'svelte';
     export let data: PageData;
+    let commentary:any = data.mefaresh
+    let mefaresh_loading=false;
+    async function switchMefaresh(mefaresh: string) {
+        mefaresh_loading=true;
+        const mefarshim = await getMefarshim("Mishna_Peah", 1, 1, mefaresh)
+        commentary = mefarshim
+        mefaresh_loading=false;
+    }
+
 </script>
 
 <div class="main-container">
@@ -11,11 +22,13 @@
     </div>
     
     <div class="mefarshim-container">
-        <h3 class="title">Mefarshim</h3>
+        <nav class="navbar">
+	        <button on:click={()=>{switchMefaresh("bar")}}><Loading bind:loading={mefaresh_loading}>Bartanura</Loading></button>
+            <button on:click={()=>{switchMefaresh("ram")}}><Loading bind:loading={mefaresh_loading}>Rambam</Loading></button>
+
+        </nav>
         <div class="text-body">
-            {#each data.mefarshim as perush}
-            <p>{@html perush}</p>
-            {/each}
+            <p>{@html commentary}</p>
         </div>
     </div>
 
@@ -23,6 +36,7 @@
         <button class="next-button">Next Mishna</button>
         <button class="prev-button">Prev Mishna</button>
     </div>
+
 </div>
 
 <style>
@@ -99,4 +113,29 @@
     padding-left: 10%;
     padding-right: 10%;
 }
-</style> -->
+
+/* Styles for the navigation bar */
+.navbar {
+    background-color: #333;
+    display: flex; /* Use flexbox to center items horizontally and vertically */
+    justify-content: center; /* Center items horizontally */
+    align-items: center; /* Center items vertically */
+    overflow: hidden;
+}
+
+/* Style for the navigation links */
+.navbar button {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+/* Hover effect for navigation links */
+.navbar a:hover {
+    background-color: #111;
+}
+
+</style>

@@ -1,3 +1,43 @@
+<script lang="ts">
+	import { goto } from '$app/navigation';
+    import {supabase} from '$lib/supabase';
+	import { onMount } from 'svelte';
+    import {user_id} from '$lib/stores';
+	import { get } from 'svelte/store';
+	import Loading from '$lib/components/Loading.svelte';
+
+    let add_loading= false;
+
+    async function addSession(){
+        add_loading=true
+        const {data, error} = await supabase.from('session_details').upsert({
+            owner_id: get(user_id),
+        }).select()
+        if (error) {
+            alert(error.message)
+        } else if (data && data[0].session_id){
+            await goto(`/session/${data[0].session_id}`)
+        }
+        add_loading=false
+        return;
+
+        
+    }
+    onMount(async () => {
+        const { data, error } = await supabase.auth.getSession();
+        console.log(data, error)
+        if (error) {
+            alert(error.message)
+            await goto('/login')
+        } else if (!data.session?.user.id){
+            await goto('/login')
+        }else {
+            user_id.set(data.session?.user.id)
+
+        }
+    })
+</script>
+<p>{$user_id}</p>
 <nav class="navbar">
     <a>Chavruta</a>
     <a>Logout</a>
@@ -26,7 +66,12 @@
         <button class="enter-button">Enter</button>
     </div>
 
-    <button class="new-button">+ New</button>
+
+    <button on:click={addSession} class="new-button">
+        <Loading bind:loading={add_loading}>
+           Create New Chavruta
+           </Loading>
+    </button>
 </div>
 
 <style>

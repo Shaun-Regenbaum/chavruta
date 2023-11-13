@@ -1,10 +1,11 @@
 <script lang="ts">
+    import Loading from '$lib/components/Loading.svelte';
+
     import type { PageData } from './$types';
     import {supabase} from '$lib/supabase';
     import {goto} from '$app/navigation';
     
-    export let data: PageData;
-    let loading= false;
+    let loading:boolean= false;
     let registered = true;
     let email:string;
     let password:string;
@@ -17,11 +18,19 @@
             email: email,
             password: password,
     })
+
     console.log(data, error)
     if (error) {
         alert(error.message)
     } else {
+        const {data:userData, error:userError} = await supabase.from('user_details').upsert({
+            user_id: data?.user?.id,
+        }) 
+        if (userError) {
+            alert(userError.message)
+        } else {
         await goto('/dashboard')
+        }
     }
     loading = false;
     return
@@ -87,25 +96,11 @@
         <div>{#if registered}
 
           <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-            {#if loading}
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-            </svg>
-            {:else}
-            Sign in
-        {/if}</button>
+           <Loading bind:loading>Sign In</Loading></button>
 
           {:else}
             <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                {#if loading}
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                </svg>
-                {:else}
-                Create account
-            {/if}</button>
+                <Loading bind:loading>Create Account</Loading></button>
             {/if}
 
         </div>
