@@ -5,37 +5,27 @@
     import {user_id} from '$lib/stores';
 	import { get } from 'svelte/store';
 	import Loading from '$lib/components/Loading.svelte';
+	import type { PageData } from './$types';
+    export let data: PageData;
+
 
     let add_loading= false;
 
     async function addSession(){
         add_loading=true
-        const {data, error} = await supabase.from('session_details').upsert({
-            owner_id: get(user_id),
-        }).select()
-        if (error) {
-            alert(error.message)
-        } else if (data && data[0].session_id){
-            await goto(`/session/${data[0].session_id}`)
-        }
+        await goto('/new-chavruta');
         add_loading=false
         return;
 
         
     }
-    onMount(async () => {
-        const { data, error } = await supabase.auth.getSession();
-        console.log(data, error)
-        if (error) {
-            alert(error.message)
-            await goto('/login')
-        } else if (!data.session?.user.id){
-            await goto('/login')
-        }else {
-            user_id.set(data.session?.user.id)
 
-        }
-    })
+    async function gotoSession(sessionId:string|undefined){
+        add_loading=true
+        await goto(`/session/${sessionId}`);
+        add_loading=false
+        return;
+    }
 </script>
 <p>{$user_id}</p>
 <nav class="navbar">
@@ -44,28 +34,17 @@
 </nav>
 
 <div class="main-container">
-    <div class="chavruta-container">
-        <h3>Chavruta #1</h3>
-        <p class="time-p">8:30 am daily</p>
-        <p class="mishna-p">Mishna Peah</p>
-        <button class="calander-button">Add to Calandar</button>
-        <button class="enter-button">Enter</button>
-    </div>
-    <div class="chavruta-container">
-        <h3>Chavruta #2</h3>
-        <p class="time-p">8:30 am daily</p>
-        <p class="mishna-p">Mishna Peah</p>
-        <button class="calander-button">Add to Calandar</button>
-        <button class="enter-button">Enter</button>
-    </div>
-    <div class="chavruta-container">
-        <h3>Chavruta #3</h3>
-        <p class="time-p">8:30 am daily</p>
-        <p class="mishna-p">Mishna Peah</p>
-        <button class="calander-button">Add to Calandar</button>
-        <button class="enter-button">Enter</button>
-    </div>
-
+    {#each data.sessions as session, i }
+        <div class="chavruta-container">
+        
+            <h3>Chavruta #{i}</h3>
+            <p class="time-p">{session.session_time}</p>
+            <p class="mishna-p">{session.owner_location}</p>
+            <button class="calander-button">Add to Calandar</button>
+            <button on:click={() => gotoSession(session.session_id)} class="enter-button">Enter</button>
+        
+        </div>
+    {/each}
 
     <button on:click={addSession} class="new-button">
         <Loading bind:loading={add_loading}>

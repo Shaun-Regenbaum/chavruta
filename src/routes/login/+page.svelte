@@ -4,6 +4,7 @@
     import type { PageData } from './$types';
     import {supabase} from '$lib/supabase';
     import {goto} from '$app/navigation';
+    import {user_id} from '$lib/stores';
     
     let loading:boolean= false;
     let registered = true;
@@ -29,7 +30,7 @@
         if (userError) {
             alert(userError.message)
         } else {
-        await goto('/dashboard')
+          await goto('/dashboard')
         }
     }
     loading = false;

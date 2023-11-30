@@ -26,9 +26,9 @@ export const load = (async ({ url, params }: { url: URL; params: { session_id?: 
     
  
     //get the mefarshim
-    const mishna = await getMishna(current.mishna, current.chapter, current.verse)
-    const mefaresh = await getMefarshim(current.mishna,current.chapter, current.verse)
-    return { mishna, mefaresh};
+    const mishna = await getMishna(current)
+    const mefaresh = await getMefarshim(current)
+    return { mishna, mefaresh, current};
 }) satisfies PageLoad;
 
 

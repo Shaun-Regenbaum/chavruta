@@ -1,11 +1,13 @@
+interface Mishna {
+    mishna: string;
+    chapter: number;
+    verse: number;
+}
 
-export async function getMishna(masechet:string, perek:number, mishna: number){
-
-    const language = "he";
+export async function getMishna(mishna:Mishna){
     // const version = "Mishnah_Berurah,_Mishnah_Berurah,_Orach_Chayim.1";
-    const url =  `http://www.sefaria.org/api/texts/${masechet}.${perek}/${language}`
-    // const headers = {
-    // }
+    const url =  `http://www.sefaria.org/api/texts/${mishna.mishna}.${mishna.chapter}`
+
    
     const response = await fetch(url, {
         method: 'GET',
@@ -15,21 +17,35 @@ export async function getMishna(masechet:string, perek:number, mishna: number){
     if (data.error) {
         throw new Error(data.error);
     }
-    // console.log(data);
-    return data.he[mishna-1];
-    // return data;
+
+    let chapterLen: number = data.he.length;
+
+    if (mishna.verse <= chapterLen) {
+        return data.he[mishna.verse-1];
+    } else if (mishna.verse > chapterLen && data.next){
+        return "End of Chapter"
+    } else {
+        return "End of Masechet"
+    }
+
+
     
 }
 
-export async function nextMishna(currentMasechet: string, currentPerek: number, currentMishna: number){
-    const data = getMishna(currentMasechet, currentPerek, currentMishna + 1);
+export async function nextMishna(currentMishna:Mishna){
+    let nextMishna:Mishna = {
+        mishna: currentMishna.mishna,
+        chapter: currentMishna.chapter,
+        verse: currentMishna.verse + 1
+    };
+    return getMishna(nextMishna)
     
 }
 
-export async function getMefarshim(masechet:string, perek:number, mishna: number, mefaresh?:string) {
+export async function getMefarshim(mishna:Mishna, mefaresh?:string) {
     const language = "he";
 
-    const url =  `http://www.sefaria.org/api/links/${masechet}.${perek}.${mishna}`;
+    const url =  `http://www.sefaria.org/api/links/${mishna.mishna}.${mishna.chapter}.${mishna.verse}`;
     
    
     const response = await fetch(url, {
@@ -55,7 +71,7 @@ export async function getMefarshim(masechet:string, perek:number, mishna: number
       }
     // get bartanura for that mishna
     const bart = [];
-    const [, masechetSplit] = masechet.split('_');
+    const [, masechetSplit] = mishna.mishna.split('_');
 
     for (const json of data) {
         if (json.index_title === `${mef} on Mishnah ${masechetSplit}`) {

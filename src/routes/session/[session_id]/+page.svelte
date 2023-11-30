@@ -8,7 +8,7 @@
     let mefaresh_loading=false;
     async function switchMefaresh(mefaresh: string) {
         mefaresh_loading=true;
-        const mefarshim = await getMefarshim("Mishna_Peah", 1, 1, mefaresh)
+        // const mefarshim = await getMefarshim("Mishna_Peah", 1, 1, mefaresh)
         commentary = mefarshim
         mefaresh_loading=false;
     }
@@ -17,7 +17,7 @@
 
 <div class="main-container">
     <div class="mishna-container">
-        <h3 class="title">Mishna</h3>
+        <h3 class="title">Masechet {data.current.mishna} {data.current.chapter}:{data.current.verse}</h3>
         <p class="text-body">{data.mishna}</p>
     </div>
     
@@ -33,7 +33,7 @@
     </div>
 
     <div class="buttons-container">
-        <button class="next-button">Next Mishna</button>
+        <button on:click={() => nextMishna(data.current)} class="next-button">Next Mishna</button>
         <button class="prev-button">Prev Mishna</button>
     </div>
 
