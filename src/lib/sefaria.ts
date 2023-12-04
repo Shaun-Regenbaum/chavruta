@@ -1,3 +1,5 @@
+import { error } from "@sveltejs/kit";
+
 interface Mishna {
     mishna: string;
     chapter: number;
@@ -16,19 +18,24 @@ export async function getMishna(mishna:Mishna){
     const data = await response.json();
     if (data.error) {
         throw new Error(data.error);
-    }
 
-    let chapterLen: number = data.he.length;
-
-    if (mishna.verse <= chapterLen) {
-        return data.he[mishna.verse-1];
-    } else if (mishna.verse > chapterLen && data.next){
-        return "End of Chapter"
     } else {
-        return "End of Masechet"
+        return data.he
     }
 
+    // let chapterLen: number = data.he.length;
 
+
+    // if (mishna.verse <= chapterLen) {
+    //     return data.he[mishna.verse-1];
+    // } else if (mishna.verse > chapterLen && data.next){
+    //     return "End of Chapter"
+    // } else {
+    //     return "End of Masechet"
+    // }
+
+
+   
     
 }
 

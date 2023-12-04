@@ -1,24 +1,55 @@
 <script lang="ts">
     import type { PageData } from '../$types';
-    import { getMefarshim, nextMishna } from '$lib/sefaria';
+    import { getMefarshim, getMishna } from '$lib/sefaria';
 	import Loading from '$lib/components/Loading.svelte';
 	import { onMount } from 'svelte';
+	import { supabase } from '$lib/supabase';
     export let data: PageData;
+
+    let currentMishna = data.current;
+    let currentChapter = data.mishnaChapter
     let commentary:any = data.mefaresh
     let mefaresh_loading=false;
+
     async function switchMefaresh(mefaresh: string) {
         mefaresh_loading=true;
         // const mefarshim = await getMefarshim("Mishna_Peah", 1, 1, mefaresh)
-        commentary = mefarshim
+        // commentary = mefarshim
         mefaresh_loading=false;
     }
 
+    async function nextMishna() {
+       let chapterLen = currentChapter.length;
+
+       if(currentMishna.verse < chapterLen) {
+        currentMishna.verse += 1;
+        // const { error } = await supabase.from('session_details').update({ 'owner_location': currentMishna }).eq('id', 1)
+       } else {
+        currentMishna.chapter += 1;
+        currentMishna.verse = 1;
+        currentChapter = await getMishna(currentMishna);
+       }
+    }
+
+    async function prevMishna() {
+       let chapterLen = currentChapter.length;
+
+       if(currentMishna.verse > 1) {
+        currentMishna.verse -= 1;
+        // const { error } = await supabase.from('session_details').update({ 'owner_location': currentMishna }).eq('id', 1)
+       } else {
+        currentMishna.chapter -= 1;
+        currentChapter = await getMishna(currentMishna);
+        let chapterLen = currentChapter.length;
+        currentMishna.verse = chapterLen;
+       }
+    }
 </script>
 
 <div class="main-container">
     <div class="mishna-container">
-        <h3 class="title">Masechet {data.current.mishna} {data.current.chapter}:{data.current.verse}</h3>
-        <p class="text-body">{data.mishna}</p>
+        <h3 class="title">Masechet {currentMishna.mishna} {currentMishna.chapter}:{currentMishna.verse}</h3>
+        <p class="text-body">{currentChapter[currentMishna.verse - 1]}</p>
     </div>
     
     <div class="mefarshim-container">
@@ -33,8 +64,8 @@
     </div>
 
     <div class="buttons-container">
-        <button on:click={() => nextMishna(data.current)} class="next-button">Next Mishna</button>
-        <button class="prev-button">Prev Mishna</button>
+        <button on:click={ nextMishna} class="next-button">Next Mishna</button>
+        <button on:click={ prevMishna } class="prev-button">Prev Mishna</button>
     </div>
 
 </div>
