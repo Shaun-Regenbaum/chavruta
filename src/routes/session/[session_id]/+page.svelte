@@ -13,8 +13,8 @@
 
     async function switchMefaresh(mefaresh: string) {
         mefaresh_loading=true;
-        // const mefarshim = await getMefarshim("Mishna_Peah", 1, 1, mefaresh)
-        // commentary = mefarshim
+        const mefarshim = await getMefarshim(currentMishna, mefaresh)
+        commentary = mefarshim
         mefaresh_loading=false;
     }
 
@@ -54,8 +54,8 @@
     
     <div class="mefarshim-container">
         <nav class="navbar">
-	        <button on:click={()=>{switchMefaresh("bar")}}><Loading bind:loading={mefaresh_loading}>Bartanura</Loading></button>
-            <button on:click={()=>{switchMefaresh("ram")}}><Loading bind:loading={mefaresh_loading}>Rambam</Loading></button>
+	        <button on:click={()=>{switchMefaresh("Bartenura")}}><Loading bind:loading={mefaresh_loading}>Bartanura</Loading></button>
+            <button on:click={()=>{switchMefaresh("Rambam")}}><Loading bind:loading={mefaresh_loading}>Rambam</Loading></button>
 
         </nav>
         <div class="text-body">

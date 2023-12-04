@@ -39,20 +39,8 @@ export async function getMishna(mishna:Mishna){
     
 }
 
-export async function nextMishna(currentMishna:Mishna){
-    let nextMishna:Mishna = {
-        mishna: currentMishna.mishna,
-        chapter: currentMishna.chapter,
-        verse: currentMishna.verse + 1
-    };
-    return getMishna(nextMishna)
-    
-}
-
-export async function getMefarshim(mishna:Mishna, mefaresh?:string) {
-    const language = "he";
-
-    const url =  `http://www.sefaria.org/api/links/${mishna.mishna}.${mishna.chapter}.${mishna.verse}`;
+export async function getMefarshim(mishna:Mishna, mefaresh:string) {
+    const url =  `http://www.sefaria.org/api/texts/${mefaresh} on Mishnah ${mishna.mishna} ${mishna.chapter}.${mishna.verse}`;
     
    
     const response = await fetch(url, {
@@ -64,29 +52,5 @@ export async function getMefarshim(mishna:Mishna, mefaresh?:string) {
         throw new Error(data.error);
     }
 
-    let mef;
-    switch (mefaresh) {
-        case "bar":
-            mef = "Bartenura";
-            break;
-        case "ram":
-            mef = "Rambam";
-            break;
-        default:
-            mef = "Bartenura";
-            break;
-      }
-    // get bartanura for that mishna
-    const bart = [];
-    const [, masechetSplit] = mishna.mishna.split('_');
-
-    for (const json of data) {
-        if (json.index_title === `${mef} on Mishnah ${masechetSplit}`) {
-          bart.push(json.he);
-        }
-      }
-      
-
-    return bart;
-
+    return data.he
 }
